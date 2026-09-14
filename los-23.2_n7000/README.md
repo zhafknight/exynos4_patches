@@ -15,6 +15,8 @@ This pack is specifically prepared for the **Samsung Galaxy Note GT-N7000 / Exyn
 - legacy SELinux, APEX, and dm-verity compatibility
 - text relocations, ashmem, Binder, and legacy HIDL compatibility
 - GLES RenderEngine and SurfaceFlinger support for legacy GPUs
+- fs-verity bypass for kernels that do not implement fs-verity
+- SurfaceFlinger support for the `debug.sf.disable_backpressure` compatibility property
 - software OMX codecs and selected camera/Bluetooth compatibility fixes
 - RIL v6/v8/v9, Broadcom Wi-Fi, and `mkbootimg --dt` support
 
@@ -37,6 +39,8 @@ To apply only one patch group:
 ./n7000-los23.2-patches/apply.sh --group core
 ./n7000-los23.2-patches/apply.sh --group graphics
 ```
+
+The optional tweaks include the battery-saver night-mode property patch (`ro.config.night_mode_on_battery_saver`).
 
 To include optional patches as well:
 

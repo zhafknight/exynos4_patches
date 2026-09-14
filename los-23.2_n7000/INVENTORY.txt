@@ -2,6 +2,7 @@
 4	recommended	core	bionic	patches/bionic/004-legacy23-0001-linker-partially-allow-text-relocations.patch
 5	recommended	core	frameworks/base	patches/frameworks/base/005-gsi-0039-Ignore-cgroup-creation-errors.patch
 6	recommended	core	frameworks/base	patches/frameworks/base/006-gsi-0055-Not-all-kernel-support-splicing-pipes-or-is-it-socke.patch
+7	recommended	core	frameworks/base	patches/frameworks/base/007-legacy23-0001-Disable-fs-verity-as-3.18-doesn-t-support-it.patch
 8	recommended	graphics	frameworks/base	patches/frameworks/base/008-legacy23-0006-hwui-return-to-ashmem.patch
 9	recommended	core	frameworks/native	patches/frameworks/native/009-gsi-0012-Disable-gpuservice-on-old-BPF-less-kernel.patch
 10	recommended	graphics	frameworks/native	patches/frameworks/native/010-gsi-staging-0003-Stall-GpuWork-on-kernels-without-gpu_work_period-tra.patch
@@ -13,6 +14,7 @@
 16	recommended	graphics	frameworks/native	patches/frameworks/native/016-legacy23-0005-renderengine-gles-Fix-QPR2-build-errors.patch
 17	recommended	graphics	frameworks/native	patches/frameworks/native/017-legacy23-0006-surfaceflinger-remove-display_intf_headers-dependenc.patch
 18	recommended	graphics	frameworks/native	patches/frameworks/native/018-legacy23-0008-renderengine-compilation-fixes-for-16-QPR1.patch
+19	recommended	graphics	frameworks/native	patches/frameworks/native/019-legacy23-0009-SF-Bring-back-support-for-disabling-backpressure-pro.patch
 20	recommended	core	system/apex	patches/system/apex/020-gsi-0001-Disable-O_DIRECT-for-old-kernels.patch
 23	recommended	core	system/core	patches/system/core/023-gsi-0018-Fix-support-for-devices-without-cgroupv2-support.patch
 24	recommended	core	system/core	patches/system/core/024-gsi-staging-0002-Restore-old-kernel-support-in-init-and-libprocessgro.patch
@@ -37,6 +39,7 @@
 82	optional	vintf	kernel/configs	patches/kernel/configs/082-gsi-staging-0001-Restore-old-kernel-configs-and-lower-version-require.patch
 83	optional	tweaks	frameworks/base	patches/frameworks/base/083-legacy23-0003-Don-t-use-PATTERNED-style-ripple-effect-by-default.patch
 84	optional	tweaks	frameworks/base	patches/frameworks/base/084-legacy23-0004-Don-t-use-stretch-effect-by-default.patch
+85	optional	tweaks	frameworks/base	patches/frameworks/base/085-legacy23-0005-batterysaver-add-property-to-disable-night-mode-on-b.patch
 86	optional	tweaks	frameworks/base	patches/frameworks/base/086-legacy23-0007-am-do-not-protect-cached-processes-from-proactive-ki.patch
 87	recommended	core	bionic	patches/bionic/087-local-0001-bionic-make-invalid-pthread-t-non-fatal.patch
 88	recommended	core	frameworks/base	patches/frameworks/base/088-local-0001-services-tolerate-unavailable-Power-HAL-hint-support.patch
@@ -48,3 +51,4 @@
 96	recommended	core	packages/modules/Connectivity	patches/packages/modules/Connectivity/096-local-0001-Do-not-require-BTF-on-pre-5.15.patch
 97	recommended	webview	external/chromium-webview	patches/external/chromium-webview/097-local-0001-chromium-webview-remove-optional-uses-libs.patch
 98	recommended	gps	system/linkerconfig	patches/system/linkerconfig/098-local-0001-linkerconfig-expose-gpsd-legacy-dependencies.patch
+99	recommended	compat	frameworks/base	patches/frameworks/base/099-user-0001-frameworks-base-legacy-lowram-compatibility-tweaks.patch
