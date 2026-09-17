@@ -1,0 +1,38 @@
+diff --git a/twrp-functions.cpp b/twrp-functions.cpp
+--- a/twrp-functions.cpp
++++ b/twrp-functions.cpp
+@@ -34,6 +34,7 @@
+ #include <sys/reboot.h>
+ #include <sys/sendfile.h>
+ #include <sys/stat.h>
++#include <sys/syscall.h>
+ #include <sys/vfs.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
+@@ -1154,7 +1155,12 @@ int TWFunc::tw_reboot(RebootCommand command)
+ 		case rb_recovery:
+       			if (DoDeactivate == 1) { Deactivation_Process(); } 
+ 			check_and_run_script("/system/bin/rebootrecovery.sh", "reboot recovery");
++#ifdef OF_USE_REBOOT_SYSCALL_FOR_RECOVERY
++			return syscall(SYS_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2,
++				LINUX_REBOOT_CMD_RESTART2, "recovery");
++#else
+ 			return property_set(ANDROID_RB_PROPERTY, "reboot,recovery");
++#endif
+ 		case rb_bootloader:
+ 			check_and_run_script("/system/bin/rebootbootloader.sh", "reboot bootloader");
+ 			return property_set(ANDROID_RB_PROPERTY, "reboot,bootloader");
+diff --git a/orangefox.mk b/orangefox.mk
+--- a/orangefox.mk
++++ b/orangefox.mk
+@@ -738,6 +738,10 @@ ifeq ($(OF_UNMOUNT_SDCARDS_BEFORE_REBOOT),1)
+     LOCAL_CFLAGS += -DOF_UNMOUNT_SDCARDS_BEFORE_REBOOT
+ endif
+ 
++ifeq ($(OF_USE_REBOOT_SYSCALL_FOR_RECOVERY),1)
++    LOCAL_CFLAGS += -DOF_USE_REBOOT_SYSCALL_FOR_RECOVERY
++endif
++
+ # whether to use the updated magiskboot
+ ifeq ($(FOX_USE_UPDATED_MAGISKBOOT),1)
+     LOCAL_CFLAGS += -DFOX_USE_UPDATED_MAGISKBOOT

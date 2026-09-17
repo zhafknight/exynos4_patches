@@ -1,0 +1,124 @@
+From: OrangeFox Recovery Project local fix
+Subject: [PATCH] recovery: serialize MTP teardown before ADB sideload
+
+On legacy FunctionFS kernels, restarting regular adbd while starting
+minadbd can make both processes write descriptors to ep0 concurrently.
+This can crash the kernel in ffs_ep0_write().
+
+Allow sideload to disable MTP without restarting regular adbd, reap the
+MTP child using its real PID, wait until USB reaches the none state, and
+give FunctionFS a short teardown interval before minadbd is launched.
+Normal MTP toggles retain their existing behaviour.
+
+diff --git a/gui/action.cpp b/gui/action.cpp
+--- a/gui/action.cpp
++++ b/gui/action.cpp
+@@ -2131,7 +2131,7 @@ int GUIAction::adbsideload(std::string arg __unused)
+ 		operation_end(0);
+ 	} else {
+ 		gui_msg("start_sideload=Starting ADB sideload feature...");
+-		bool mtp_was_enabled = TWFunc::Toggle_MTP(false);
++		bool mtp_was_enabled = TWFunc::Toggle_MTP(false, false);
+ 
+ 		// wait for the adb connection
+ 		Device::BuiltinAction reboot_action = Device::REBOOT_BOOTLOADER;
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -3160,35 +3160,37 @@ void TWPartitionManager::Add_All_MTP_Storage(void) {
+ #endif
+ }
+ 
+-bool TWPartitionManager::Disable_MTP(void) {
++bool TWPartitionManager::Disable_MTP(bool enable_adb) {
+ 	char old_value[PROPERTY_VALUE_MAX];
+ 	property_set("sys.usb.ffs.mtp.ready", "0");
+ 	property_get("sys.usb.config", old_value, "");
+-	if (strcmp(old_value, "adb") != 0) {
++#ifdef TW_HAS_MTP
++	if (mtppid) {
++		LOGINFO("Disabling MTP\n");
++		int status;
++		pid_t old_mtppid = mtppid;
++		kill(old_mtppid, SIGKILL);
++		waitpid(old_mtppid, &status, 0);
++		mtppid = 0;
++		close(mtp_write_fd);
++		mtp_write_fd = -1;
++	}
++#endif
++	if (!enable_adb || strcmp(old_value, "adb") != 0) {
+ 		char vendor[PROPERTY_VALUE_MAX];
+ 		char product[PROPERTY_VALUE_MAX];
+ 		property_set("sys.usb.config", "none");
++		android::base::WaitForProperty("sys.usb.state", "none");
+ 		property_get("usb.vendor", vendor, "18D1");
+ 		property_get("usb.product.adb", product, "D001");
+ 		string vendorstr = vendor;
+ 		string productstr = product;
+ 		TWFunc::write_to_file("/config/usb_gadget/g1/idVendor", vendorstr);
+ 		TWFunc::write_to_file("/config/usb_gadget/g1/idProduct", productstr);
+-		usleep(2000);
++		usleep(250000);
+ 	}
+-#ifdef TW_HAS_MTP
+-	if (mtppid) {
+-		LOGINFO("Disabling MTP\n");
+-		int status;
+-		kill(mtppid, SIGKILL);
+-		mtppid = 0;
+-		// We don't care about the exit value, but this prevents a zombie process
+-		waitpid(mtppid, &status, 0);
+-		close(mtp_write_fd);
+-		mtp_write_fd = -1;
+-	}
+-#endif
+-	property_set("sys.usb.config", "adb");
++	if (enable_adb)
++		property_set("sys.usb.config", "adb");
+ #ifdef TW_HAS_MTP
+ 	DataManager::SetValue("tw_mtp_enabled", 0);
+ 	return true;
+diff --git a/partitions.hpp b/partitions.hpp
+--- a/partitions.hpp
++++ b/partitions.hpp
+@@ -407,7 +407,7 @@ public:
+ 	void Output_Storage_Fstab();                                              // Creates a /cache/recovery/storage.fstab file with a list of all potential storage locations for app use
+ 	bool Enable_MTP();                                                        // Enables MTP
+ 	void Add_All_MTP_Storage();                                               // Adds all storage objects for MTP
+-	bool Disable_MTP();                                                       // Disables MTP
++	bool Disable_MTP(bool enable_adb = true);                                // Disables MTP
+ 	bool Add_MTP_Storage(string Mount_Point);                                 // Adds or removes an MTP Storage partition
+ 	bool Add_MTP_Storage(unsigned int Storage_ID);                            // Adds or removes an MTP Storage partition
+ 	bool Remove_MTP_Storage(string Mount_Point);                              // Adds or removes an MTP Storage partition
+diff --git a/twrp-functions.cpp b/twrp-functions.cpp
+--- a/twrp-functions.cpp
++++ b/twrp-functions.cpp
+@@ -2096,7 +2096,7 @@ int TWFunc::Set_Brightness(std::string brightness_value)
+   return result;
+ }
+ 
+-bool TWFunc::Toggle_MTP(bool enable)
++bool TWFunc::Toggle_MTP(bool enable, bool enable_adb)
+ {
+ #ifdef TW_HAS_MTP
+   static int was_enabled = false;
+@@ -2109,7 +2109,7 @@ bool TWFunc::Toggle_MTP(bool enable)
+   else
+     {
+       was_enabled = DataManager::GetIntValue("tw_mtp_enabled");
+-      PartitionManager.Disable_MTP();
++      PartitionManager.Disable_MTP(enable_adb);
+       usleep(500);
+     }
+   return was_enabled;
+diff --git a/twrp-functions.hpp b/twrp-functions.hpp
+--- a/twrp-functions.hpp
++++ b/twrp-functions.hpp
+@@ -147,3 +147,3 @@ public:
+ 	static int Set_Brightness(std::string brightness_value); // Well, you can read, it does what it says, passing return int from TWFunc::Write_File ;)
+-	static bool Toggle_MTP(bool enable);                                        // Disables MTP if enable is false and re-enables MTP if enable is true and it was enabled the last time it was toggled off
++	static bool Toggle_MTP(bool enable, bool enable_adb = true);                // Disables MTP if enable is false and re-enables MTP if enable is true and it was enabled the last time it was toggled off
+ 	static std::string to_string(unsigned long value); //convert ul to string
+-- 
+2.43.0
