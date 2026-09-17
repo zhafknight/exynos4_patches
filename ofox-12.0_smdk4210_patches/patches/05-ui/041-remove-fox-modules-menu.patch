@@ -1,0 +1,16 @@
+diff --git a/gui/theme/portrait_hdpi/pages/advanced.xml b/gui/theme/portrait_hdpi/pages/advanced.xml
+index 936a8874..73a6327b 100644
+--- a/gui/theme/portrait_hdpi/pages/advanced.xml
++++ b/gui/theme/portrait_hdpi/pages/advanced.xml
+@@ -89,11 +89,6 @@
+ 					<action function="set">rmm_type=ksu</action>
+ 					<action function="page">modules_mount</action>
+ 				</listitem>
+-				<listitem name="{@fox_modules_hdr}">
+-					<condition var1="fileexists" var2="/FFiles/OF_reset/OF_reset.zip"/>
+-					<icon res="addons"/>
+-					<action function="page">fox_modules</action>
+-				</listitem>
+ 				<listitem name="{@appmgr_title}">
+ 					<condition var1="enable_app_manager" var2="1"/>
+ 					<icon res="apps_box"/>

@@ -1,0 +1,24 @@
+diff --git a/build/tasks/kernel.mk b/build/tasks/kernel.mk
+index 779df53..f2f37cd 100644
+--- a/build/tasks/kernel.mk
++++ b/build/tasks/kernel.mk
+@@ -186,7 +186,7 @@ KERNEL_DEPMOD_STAGING_DIR := $(KERNEL_BUILD_OUT_PREFIX)$(call intermediates-dir-
+ KERNEL_MODULE_MOUNTPOINT := system
+ $(INSTALLED_SYSTEMIMAGE_TARGET): $(TARGET_PREBUILT_INT_KERNEL)
+ else ifeq ($(NEED_KERNEL_MODULE_RECOVERY),true)
+-KERNEL_MODULES_OUT := $(TARGET_RECOVERY_ROOT_OUT)/vendor
++KERNEL_MODULES_OUT := $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)
+ KERNEL_DEPMOD_STAGING_DIR := $(KERNEL_BUILD_OUT_PREFIX)$(call intermediates-dir-for,PACKAGING,depmod_recovery)
+ KERNEL_MODULE_MOUNTPOINT :=
+ $(INSTALLED_RAMDISK_TARGET): $(TARGET_PREBUILT_INT_KERNEL)
+@@ -398,8 +398,8 @@ endif # FULL_KERNEL_BUILD
+ ifneq ($(TW_LOAD_VENDOR_MODULES),)
+ define twrp-depmod
+ 	@echo "calling depmod on prebuilt modules"
+-	mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib/modules/1.1
+-	$(DEPMOD) -b $(TARGET_RECOVERY_ROOT_OUT)/vendor 1.1
++	mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/lib/modules/1.1
++	$(DEPMOD) -b $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR) 1.1
+ endef
+ endif
+ ## Install it

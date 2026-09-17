@@ -1,0 +1,14 @@
+# order	category	repo	patch	sha256	description
+1	build	build/make	patches/01-build/001-add-orangefox-build-integration.patch	92b7279c30a39cc1c4578f5db622665f0cbf2eb33ccaf70abeac5ebff1bc00a2	OrangeFox build hooks and environment setup
+2	build	vendor/twrp	patches/01-build/002-add-orangefox-soong-config.patch	3df7d66837c89b2416b34a220f859af7ae0f129f9a1c43a7685ffdf735727a9d	Include OrangeFox Soong configuration
+10	recovery-layout	bootable/recovery	patches/02-recovery-layout/010-use-vendor-path-in-recovery-ramdisk.patch	5adf8aba1d62d5ead8c935e46ad3bdf014f0f4026662423693c607cfa1cc367e	Use TARGET_COPY_OUT_VENDOR inside recovery ramdisk
+11	recovery-layout	vendor/twrp	patches/02-recovery-layout/011-install-recovery-kernel-modules-to-vendor.patch	044af407c2a250ab3f07c48cfc5fdee65f1b4494941ae946a1866f5e012cfa59	Place recovery kernel modules under TARGET_COPY_OUT_VENDOR
+20	adb-sideload	bootable/recovery	patches/03-adb-sideload/020-reset-android-usb-before-adb-sideload.patch	af866900752be06638dd97395e3e999e6168eaddc03523bdfb917600d03632f0	Reset legacy android_usb gadget before sideload
+21	adb-sideload	bootable/recovery	patches/03-adb-sideload/021-fix-adb-sideload-cancel-freeze.patch	7ab14d2278cdb2a71babdac3b4aba6564631c6a102d50318b40d359b2df8ba07	Cancel minadbd without blocking recovery UI
+30	hardware	bootable/recovery	patches/04-hardware/030-add-touchkey-backlight-and-home-wake.patch	dcbe2f83b392521660e1b3f083c864cc81e8c8280b76629667db9436d4cc8a86	Touchkey backlight handling and HOME wake support
+40	ui	bootable/recovery	patches/05-ui/040-add-sdcard0-non-emulated-storage.patch	4bc43ddeb43469a9576dee3286ce1c785204f10004a190a46ab6a41cd417296b	Add /sdcard0 non-emulated storage entry
+41	ui	bootable/recovery	patches/05-ui/041-remove-fox-modules-menu.patch	e4ea399e571da34b29df5f88be3fe93d832848c92ad37d1aec51996f1d967e48	Remove Fox Modules menu entry
+42	ui	bootable/recovery	patches/05-ui/042-remove-magisk-install-queue-buttons.patch	4c4d0760b41a8bee30902cb34551d27101d12fb96777fc33411b3ba2bf8e4738	Remove Magisk queue shortcut buttons
+43	ui	bootable/recovery	patches/05-ui/043-enable-classic-navbar-buttons.patch	35cdfc39b1b23af1670cd761f7cb4d1f5010170348c1c002c01cd2ebfad6ab40	Enable classic navigation bar buttons
+50	compat	frameworks/native	patches/06-compat/050-fix-libbinder-arm32-exported-symbols.patch	98239a34436f46bb04a9656bb5c133bbcb2cee723843d34037cba1f3decc0413	Adjust ARM32 libbinder exported symbol map
+60	ota	system/update_engine	patches/07-ota/060-add-ota-source-hash-bypass-property.patch	4995f12eff1ad04a3a9377685e662a450a3791866888bde8fd7cf0ac0b086e48	Optional source-hash verification bypass property

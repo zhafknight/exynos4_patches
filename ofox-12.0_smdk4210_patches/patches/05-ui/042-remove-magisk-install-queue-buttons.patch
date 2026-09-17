@@ -1,0 +1,37 @@
+diff --git a/gui/theme/portrait_hdpi/pages/install.xml b/gui/theme/portrait_hdpi/pages/install.xml
+index 8787a8e0..9c177f26 100644
+--- a/gui/theme/portrait_hdpi/pages/install.xml
++++ b/gui/theme/portrait_hdpi/pages/install.xml
+@@ -78,32 +78,6 @@
+ 				</listitem>
+ 			</listbox>
+ 
+-			<button style="btn_raised">
+-				<condition var1="fileexists" var2="%fox_magisk_path%/%fox_magisk_zip_installer%"/>
+-				<condition var1="of_magisk_in_queue" var2="0"/>
+-				<condition var1="tw_zip_queue_count" var2="1"/>
+-				<placement x="%btn_raised_left_x%" y="%row_btn2_y%"/>
+-				<text>{@install_queue_magisk_btn}</text>
+-				<action function="set">tw_file=%fox_magisk_zip_installer%</action>
+-				<action function="set">tw_filename=%fox_magisk_path%/%fox_magisk_zip_installer%</action>
+-				<action function="set">tw_zip_location=%fox_magisk_path%</action>
+-				<action function="queuezip"/>
+-				<action function="page">flash_confirm</action>
+-			</button>
+-			
+-			<button style="btn_raised">
+-				<condition var1="fileexists" var2="%fox_magisk_path%/%fox_magisk_zip_installer%"/>
+-				<condition var1="of_magisk_in_queue" var2="0"/>
+-				<condition var1="tw_zip_queue_count" op="&gt;=" var2="2"/>
+-				<placement x="%btn_raised_left_x%" y="%row_btn3_y%"/>
+-				<text>{@install_queue_magisk_btn}</text>
+-				<action function="set">tw_file=%fox_magisk_zip_installer%</action>
+-				<action function="set">tw_filename=%fox_magisk_path%/%fox_magisk_zip_installer%</action>
+-				<action function="set">tw_zip_location=%fox_magisk_path%</action>
+-				<action function="queuezip"/>
+-				<action function="page">flash_confirm</action>
+-			</button>
+-
+ 			<button style="btn_raised">
+ 				<placement x="%btn_raised_left_x%" y="%row_btn2_y%"/>
+ 				<text>{@raised_viewqueue_btn}</text>

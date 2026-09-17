@@ -1,0 +1,64 @@
+diff --git a/etc/Android.mk b/etc/Android.mk
+index 2387b906..89a9a349 100755
+--- a/etc/Android.mk
++++ b/etc/Android.mk
+@@ -125,7 +125,7 @@ ifeq ($(AB_OTA_UPDATER),true)
+ 	LOCAL_MODULE := android.hardware.boot@1.1.xml
+ 	LOCAL_MODULE_TAGS := optional
+ 	LOCAL_MODULE_CLASS := EXECUTABLES
+-	LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/vintf/manifest
++	LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/etc/vintf/manifest
+ 	LOCAL_SRC_FILES := init/$(LOCAL_MODULE)
+ 	include $(BUILD_PREBUILT)
+ 
+@@ -141,7 +141,7 @@ ifeq ($(AB_OTA_UPDATER),true)
+ 	LOCAL_MODULE := android.hardware.boot@1.2.xml
+ 	LOCAL_MODULE_TAGS := optional
+ 	LOCAL_MODULE_CLASS := EXECUTABLES
+-	LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/vintf/manifest
++	LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/etc/vintf/manifest
+ 	LOCAL_SRC_FILES := init/$(LOCAL_MODULE)
+ 	include $(BUILD_PREBUILT)
+ endif
+@@ -157,7 +157,7 @@ include $(CLEAR_VARS)
+ LOCAL_MODULE := android.hardware.health@2.1.xml
+ LOCAL_MODULE_TAGS := optional
+ LOCAL_MODULE_CLASS := EXECUTABLES
+-LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/vintf/manifest
++LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/etc/vintf/manifest
+ LOCAL_SRC_FILES := init/$(LOCAL_MODULE)
+ include $(BUILD_PREBUILT)
+ include $(CLEAR_VARS)
+diff --git a/prebuilt/Android.mk b/prebuilt/Android.mk
+index 4be29d8b..2d8b2e7b 100755
+--- a/prebuilt/Android.mk
++++ b/prebuilt/Android.mk
+@@ -448,7 +448,7 @@ LOCAL_MODULE := relink_vendor_hw_binaries
+ LOCAL_MODULE_TAGS := optional
+ LOCAL_MODULE_CLASS := EXECUTABLES
+ LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/
+-LOCAL_POST_INSTALL_CMD += $(RELINK) $(TARGET_RECOVERY_ROOT_OUT)/vendor/bin/hw $(RECOVERY_VENDOR_HW_BINARY_FILES)
++LOCAL_POST_INSTALL_CMD += $(RELINK) $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/bin/hw $(RECOVERY_VENDOR_HW_BINARY_FILES)
+ TARGET_VENDOR_BINARY_RELINK_FILES := $(notdir $(RECOVERY_VENDOR_HW_BINARY_FILES))
+ LOCAL_REQUIRED_MODULES += $(TARGET_VENDOR_BINARY_RELINK_FILES)
+ $(warning vendor_hw: $(LOCAL_POST_INSTALL_CMD))
+@@ -463,11 +463,11 @@ LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)
+ LOCAL_POST_INSTALL_CMD += \
+     mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/sbin; ln -sf /system/bin/sh $(TARGET_RECOVERY_ROOT_OUT)/sbin/sh && \
+     mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/system/etc/selinux/ && \
+-    mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/selinux/ && \
++    mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/etc/selinux/ && \
+     cp $(TARGET_OUT_ETC)/selinux/plat_service_contexts $(TARGET_RECOVERY_ROOT_OUT)/system/etc/selinux/plat_service_contexts && \
+     cp $(TARGET_OUT_ETC)/selinux/plat_hwservice_contexts $(TARGET_RECOVERY_ROOT_OUT)/system/etc/selinux/plat_hwservice_contexts && \
+-    cp $(TARGET_OUT_VENDOR_ETC)/selinux/vndservice_contexts $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/selinux/vndservice_contexts && \
+-    cp $(TARGET_OUT_VENDOR_ETC)/selinux/vendor_hwservice_contexts $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/selinux/vendor_hwservice_contexts && \
++    cp $(TARGET_OUT_VENDOR_ETC)/selinux/vndservice_contexts $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/etc/selinux/vndservice_contexts && \
++    cp $(TARGET_OUT_VENDOR_ETC)/selinux/vendor_hwservice_contexts $(TARGET_RECOVERY_ROOT_OUT)/$(TARGET_COPY_OUT_VENDOR)/etc/selinux/vendor_hwservice_contexts && \
+     cp $(TARGET_OUT_ETC)/selinux/plat_keystore2_key_contexts $(TARGET_RECOVERY_ROOT_OUT)/system/etc/selinux/plat_keystore2_key_contexts
+     ifeq ($(TARGET_USES_MKE2FS), true)
+         LOCAL_POST_INSTALL_CMD += \
+@@ -562,4 +562,3 @@ ifeq ($(FOX_BUILD_BASH),1)
+         ln -sf /system/bin/bash $(TARGET_RECOVERY_ROOT_OUT)/sbin/bash;
+ 	include $(BUILD_PHONY_PACKAGE)
+ endif
+-

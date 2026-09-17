@@ -1,0 +1,20 @@
+diff --git a/gui/theme/portrait_hdpi/themes/navbar.xml b/gui/theme/portrait_hdpi/themes/navbar.xml
+index bd964771..8f2daa01 100644
+--- a/gui/theme/portrait_hdpi/themes/navbar.xml
++++ b/gui/theme/portrait_hdpi/themes/navbar.xml
+@@ -1,9 +1,9 @@
+ <?xml version="1.0"?>
+ <recovery>
+ 	<variables>
+-		<variable name="navbar_disable" value="1"/>
+-		<variable name="navbar_disable_add" value="96"/>
+-		<variable name="screen_h" value="%screen_original_h%+96"/>
+-		<variable name="real_gestures_enable" value="1"/>
++		<variable name="navbar_disable" value="0"/>
++		<variable name="navbar_disable_add" value="0"/>
++		<variable name="screen_h" value="%screen_original_h%"/>
++		<variable name="real_gestures_enable" value="0"/>
+ 	</variables>
+-</recovery>
+\ No newline at end of file
++</recovery>

@@ -1,0 +1,63 @@
+diff --git a/gui/gui.cpp b/gui/gui.cpp
+index 1f13ee2f..9b31b172 100644
+--- a/gui/gui.cpp
++++ b/gui/gui.cpp
+@@ -87,6 +87,24 @@ static int gRecorder = -1;
+ 
+ static long long g_suppress_power_toggle_until_ms = 0;
+ static inline long long nowMs() { struct timeval t; gettimeofday(&t, NULL); return (long long)t.tv_sec * 1000LL + t.tv_usec / 1000; }
++static const char* g_touchkey_brightness_path = "/sys/devices/virtual/sec/sec_touchkey/brightness";
++static long long g_touchkey_light_off_at_ms = 0;
++
++static void updateTouchkeyLight()
++{
++	if (g_touchkey_light_off_at_ms != 0 && nowMs() >= g_touchkey_light_off_at_ms) {
++		TWFunc::write_to_file(g_touchkey_brightness_path, "0");
++		g_touchkey_light_off_at_ms = 0;
++	}
++}
++
++static void activateTouchkeyLight()
++{
++	if (TWFunc::Path_Exists(g_touchkey_brightness_path)) {
++		TWFunc::write_to_file(g_touchkey_brightness_path, "1");
++		g_touchkey_light_off_at_ms = nowMs() + 3000;
++	}
++}
+ 
+ extern "C" void gr_write_frame_to_file(int fd);
+ 
+@@ -124,6 +142,8 @@ public:
+ 		key_status = KS_NONE;
+ 		state = AS_NO_ACTION;
+ 		x = y = 0;
++		if (TWFunc::Path_Exists(g_touchkey_brightness_path))
++			TWFunc::write_to_file(g_touchkey_brightness_path, "0");
+ 
+ #ifndef TW_NO_SCREEN_TIMEOUT
+ 		{
+@@ -185,6 +205,7 @@ InputHandler input_handler;
+ bool InputHandler::processInput(int timeout_ms)
+ {
+ 	input_event ev;
++	updateTouchkeyLight();
+ 	int ret = ev_get(&ev, timeout_ms);
+ 
+ 	if (ret < 0)
+@@ -210,8 +231,16 @@ bool InputHandler::processInput(int timeout_ms)
+ 		break;
+ 
+ 	case EV_KEY:
++#ifndef TW_NO_SCREEN_BLANK
++		if (ev.code == KEY_HOME && blankTimer.isScreenOff()) {
++			if (ev.value == 0)
++				blankTimer.toggleBlank();
++			return true;
++		}
++#endif
+ 		if((ev.code == KEY_MENU || ev.code == KEY_HOME || ev.code == KEY_BACK) && DataManager::GetIntValue("tw_enable_keys") != 0) {
+ 		    if(ev.value != 0){
++		         activateTouchkeyLight();
+ 		         if(ev.code == KEY_HOME && DataManager::GetStrValue("tw_menu_key") != "")
+ 	                       PageManager::NotifyKey(KEY_HOMEPAGE, true);
+ 		         if(ev.code == KEY_BACK && DataManager::GetStrValue("tw_menu_key") != "")

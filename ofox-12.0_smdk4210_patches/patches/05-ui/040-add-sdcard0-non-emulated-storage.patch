@@ -1,0 +1,44 @@
+diff --git a/gui/theme/common/languages/en.xml b/gui/theme/common/languages/en.xml
+index 7c64c5a8..b70c2607 100644
+--- a/gui/theme/common/languages/en.xml
++++ b/gui/theme/common/languages/en.xml
+@@ -17,6 +17,7 @@
+ 		<string name="data">Data</string>
+ 		<string name="sdcard">SDCard</string>
+ 		<string name="internal">Internal Storage</string>
++		<string name="non_emulated_storage">Non-Emulated Storage</string>
+ 		<string name="microsd">Micro SDCard</string>
+ 		<string name="usb_storage">USB-Storage</string>
+ 		<string name="android_secure">Android Secure</string>
+diff --git a/gui/theme/portrait_hdpi/pages/templates/templates.xml b/gui/theme/portrait_hdpi/pages/templates/templates.xml
+index 9dd03df7..94005dc1 100644
+--- a/gui/theme/portrait_hdpi/pages/templates/templates.xml
++++ b/gui/theme/portrait_hdpi/pages/templates/templates.xml
+@@ -11,6 +11,13 @@
+ 					<action function="set">tw_reload_fm=1</action>
+ 					<action function="page">filemanagerlist</action>
+ 				</listitem>
++				<listitem name="{@non_emulated_storage}">
++					<icon res="mobile"/>
++					<condition var1="fileexists" var2="/sdcard0"/>
++					<action function="set">tw_file_location1=/sdcard0</action>
++					<action function="set">tw_reload_fm=1</action>
++					<action function="page">filemanagerlist</action>
++				</listitem>
+ 				<listitem name="{@microsd}">
+ 					<icon res="sd_card"/>
+ 					<condition var1="fileexists" var2="/sdcard1"/>
+@@ -72,6 +79,13 @@
+ 					<action function="set">tw_reload_fm=1</action>
+ 					<action function="page">%sp_back%</action>
+ 				</listitem>
++				<listitem name="{@non_emulated_storage}">
++					<icon res="mobile"/>
++					<condition var1="fileexists" var2="/sdcard0"/>
++					<action function="set">tw_zip_location_tmp=/sdcard0</action>
++					<action function="set">tw_reload_fm=1</action>
++					<action function="page">%sp_back%</action>
++				</listitem>
+ 				<listitem name="{@microsd}">
+ 					<icon res="sd_card"/>
+ 					<condition var1="fileexists" var2="/sdcard1"/>

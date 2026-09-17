@@ -1,0 +1,102 @@
+diff --git a/gui/action.cpp b/gui/action.cpp
+index 293dd164..cd52e7d0 100755
+--- a/gui/action.cpp
++++ b/gui/action.cpp
+@@ -2172,14 +2172,11 @@ int GUIAction::adbsideloadcancel(std::string arg __unused)
+ 	sideload_child_pid = GetMiniAdbdPid();
+ 	if (!sideload_child_pid) {
+ 		LOGERR("Unable to get child ID\n");
++		DataManager::SetValue("tw_page_done", "1");
+ 		return 0;
+ 	}
+-	::sleep(1);
+-	LOGINFO("Killing child sideload process.\n");
+-	kill(sideload_child_pid, SIGTERM);
+-	int status;
+-	LOGINFO("Waiting for child sideload process to exit.\n");
+-	waitpid(sideload_child_pid, &status, 0);
++	LOGINFO("Stopping child sideload process.\n");
++	CancelMiniAdbd();
+ 	sideload_child_pid = 0;
+ 	DataManager::SetValue("tw_page_done", "1"); // For OpenRecoveryScript support
+ 	return 0;
+diff --git a/twrpinstall/adb_install.cpp b/twrpinstall/adb_install.cpp
+index d9a517f0..ad64fdcb 100755
+--- a/twrpinstall/adb_install.cpp
++++ b/twrpinstall/adb_install.cpp
+@@ -58,10 +58,23 @@
+ // always be sent to the minadbd side.
+ using CommandFunction = std::function<std::pair<bool, bool>()>;
+ 
+-pid_t child;
++static std::atomic<pid_t> child{0};
++static std::atomic<int> sideload_socket{-1};
+ 
+ pid_t GetMiniAdbdPid() {
+-  return child;
++  return child.load();
++}
++
++void CancelMiniAdbd() {
++  int socket_fd = sideload_socket.load();
++  if (socket_fd >= 0) {
++    shutdown(socket_fd, SHUT_RDWR);
++  }
++
++  pid_t child_pid = child.load();
++  if (child_pid > 0) {
++    kill(child_pid, SIGTERM);
++  }
+ }
+ 
+ static bool SetUsbConfig(const std::string& state) {
+@@ -291,12 +304,14 @@ static void CreateMinadbdServiceAndExecuteCommands(
+     return;
+   }
+ 
+-  child = fork();
+-  if (child == -1) {
++  pid_t child_pid = fork();
++  child.store(child_pid);
++  if (child_pid == -1) {
++    child.store(0);
+     PLOG(ERROR) << "Failed to fork child process";
+     return;
+   }
+-  if (child == 0) {
++  if (child_pid == 0) {
+     recovery_socket.reset();
+     std::vector<std::string> minadbd_commands = {
+       "/system/bin/minadbd",
+@@ -320,14 +335,17 @@ static void CreateMinadbdServiceAndExecuteCommands(
+     return;
+   }
+ 
+-  std::thread listener_thread(ListenAndExecuteMinadbdCommands, child,
++  sideload_socket.store(recovery_socket.get());
++  std::thread listener_thread(ListenAndExecuteMinadbdCommands, child_pid,
+                               std::move(recovery_socket), std::ref(command_map));
+   if (listener_thread.joinable()) {
+     listener_thread.join();
+   }
++  sideload_socket.store(-1);
+ 
+   int status;
+-  waitpid(child, &status, 0);
++  waitpid(child_pid, &status, 0);
++  child.store(0);
+   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+     if (WEXITSTATUS(status) == MinadbdErrorCode::kMinadbdAdbVersionError) {
+       LOG(ERROR) << "\nYou need adb 1.0.32 or newer to sideload\nto this device.\n";
+diff --git a/twrpinstall/include/twinstall/adb_install.h b/twrpinstall/include/twinstall/adb_install.h
+index 42321d4e..790f79d0 100755
+--- a/twrpinstall/include/twinstall/adb_install.h
++++ b/twrpinstall/include/twinstall/adb_install.h
+@@ -22,4 +22,5 @@
+ // InstallResult`). When a reboot has been requested, INSTALL_REBOOT will be the return value, with
+ // the reboot target set in reboot_action.
+ int twrp_sideload(const char* install_file, Device::BuiltinAction* reboot_action);
+-pid_t GetMiniAdbdPid();
+\ No newline at end of file
++pid_t GetMiniAdbdPid();
++void CancelMiniAdbd();
